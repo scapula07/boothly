@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { userApi } from '../../firebase/event';
 
 const IMAGE_TYPES = ['Live Gif', 'Gif', 'Rebound', 'Video'];
 const LAYOUTS = ['Single', '2 by 2', '1 and 2', '2 Strip', '3 Strip', '4 Strip'];
@@ -9,32 +11,87 @@ const CROPS = [
 ];
 const COLOR_SCHEMES = ['Dark', 'Light'];
 
+const TEMPLATE_SETTINGS: Record<string, Partial<typeof defaultSettings>> = {
+  '1': { imageType: 'Gif', layout: '2 by 2', colorScheme: 'Dark' },
+  '2': { imageType: 'Video', layout: '1 and 2', colorScheme: 'Light' },
+  '3': { imageType: 'Live Gif', layout: 'Single', colorScheme: 'Dark' },
+  'scratch': {},
+};
+
+const defaultSettings = {
+  eventName: '',
+  date: new Date().toISOString().slice(0, 10),
+  imageType: 'Live Gif',
+  layout: 'Single',
+  crop: 'none',
+  margins: 10,
+  corners: 0,
+  colorScheme: 'Dark',
+  textColor: '#FFFFFF',
+  bgColor: '#555555',
+  startScreenPortrait: null as File | null,
+  startScreenLandscape: null as File | null,
+  showGetReady: true,
+  countdown: 3,
+  startDelay: 1,
+  camera: 'Front',
+};
+
 export default function CreateEvent() {
-  const [eventName, setEventName] = useState('');
-  const [date, setDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().slice(0, 10);
-  });
-  const [imageType, setImageType] = useState(IMAGE_TYPES[0]);
-  const [layout, setLayout] = useState(LAYOUTS[0]);
-  const [crop, setCrop] = useState(CROPS[0].value);
-  const [margins, setMargins] = useState(10);
-  const [corners, setCorners] = useState(0);
-  const [colorScheme, setColorScheme] = useState(COLOR_SCHEMES[0]);
-  const [textColor, setTextColor] = useState('#FFFFFF');
-  const [bgColor, setBgColor] = useState('#555555');
-  const [startScreenPortrait, setStartScreenPortrait] = useState<File | null>(null);
-  const [startScreenLandscape, setStartScreenLandscape] = useState<File | null>(null);
-  const [showGetReady, setShowGetReady] = useState(true);
-  const [countdown, setCountdown] = useState(3);
-  const [startDelay, setStartDelay] = useState(1);
-  const [camera, setCamera] = useState('Front');
+  const router = useRouter();
+  const { template } = router.query;
+
+  const [settings, setSettings] = useState(defaultSettings);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (template && TEMPLATE_SETTINGS[template as string]) {
+      setSettings((prev) => ({ ...prev, ...TEMPLATE_SETTINGS[template as string] }));
+    }
+  }, [template]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const userId = "exampleUserId"; // Replace with actual user ID from authentication
+    const eventData = {
+      templateId: template as string,
+      eventName: settings.eventName,
+      date: settings.date,
+      imageType: settings.imageType,
+      layout: settings.layout,
+      crop: settings.crop,
+      margins: settings.margins,
+      corners: settings.corners,
+      colorScheme: settings.colorScheme,
+      textColor: settings.textColor,
+      bgColor: settings.bgColor,
+      startScreenPortrait: settings.startScreenPortrait,
+      startScreenLandscape: settings.startScreenLandscape,
+      showGetReady: settings.showGetReady,
+      countdown: settings.countdown,
+      startDelay: settings.startDelay,
+      camera: settings.camera,
+    };
+
+    const result = await userApi.createEvent(userId, eventData);
+
+    if (result.success) {
+      alert(result.message);
+      router.push(`/event/${result.id}`);
+    } else {
+      alert(result.message);
+    }
+
+    setIsLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-10 px-4">
         <h2 className="text-3xl font-semibold mb-8">New Event</h2>
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-2xl shadow-2xl p-8 animate-fadein">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-2xl shadow-2xl p-8 animate-fadein">
           {/* Left column */}
           <div className="space-y-6">
             <div>
@@ -42,8 +99,8 @@ export default function CreateEvent() {
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                value={eventName}
-                onChange={e => setEventName(e.target.value)}
+                value={settings.eventName}
+                onChange={e => setSettings({ ...settings, eventName: e.target.value })}
                 placeholder="Enter event name"
               />
             </div>
@@ -52,8 +109,8 @@ export default function CreateEvent() {
               <input
                 type="date"
                 className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                value={date}
-                onChange={e => setDate(e.target.value)}
+                value={settings.date}
+                onChange={e => setSettings({ ...settings, date: e.target.value })}
               />
               <p className="text-xs text-gray-500 mt-1">The date you pick here does not have any effect on the expiry date. <a href="#" className="text-purple-600 underline">Learn more</a></p>
             </div>
@@ -64,8 +121,8 @@ export default function CreateEvent() {
                   <button
                     type="button"
                     key={type}
-                    className={`px-4 py-2 rounded border ${imageType === type ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-700 border-gray-300'} font-medium`}
-                    onClick={() => setImageType(type)}
+                    className={`px-4 py-2 rounded border ${settings.imageType === type ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-700 border-gray-300'} font-medium`}
+                    onClick={() => setSettings({ ...settings, imageType: type })}
                   >
                     {type}
                   </button>
@@ -79,8 +136,8 @@ export default function CreateEvent() {
                   <button
                     type="button"
                     key={l}
-                    className={`px-4 py-2 rounded border ${layout === l ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-700 border-gray-300'} font-medium`}
-                    onClick={() => setLayout(l)}
+                    className={`px-4 py-2 rounded border ${settings.layout === l ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-700 border-gray-300'} font-medium`}
+                    onClick={() => setSettings({ ...settings, layout: l })}
                   >
                     {l}
                   </button>
@@ -94,8 +151,8 @@ export default function CreateEvent() {
                   <button
                     type="button"
                     key={c.value}
-                    className={`px-4 py-2 rounded border ${crop === c.value ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-700 border-gray-300'} font-medium`}
-                    onClick={() => setCrop(c.value)}
+                    className={`px-4 py-2 rounded border ${settings.crop === c.value ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-700 border-gray-300'} font-medium`}
+                    onClick={() => setSettings({ ...settings, crop: c.value })}
                   >
                     {c.label}
                   </button>
@@ -104,65 +161,66 @@ export default function CreateEvent() {
             </div>
             <div>
               <label className="block text-gray-700 text-sm mb-2">Margins</label>
-              <input type="range" min={0} max={50} value={margins} onChange={e => setMargins(Number(e.target.value))} className="w-full" />
-              <div className="text-xs text-gray-500">{margins}</div>
+              <input type="range" min={0} max={50} value={settings.margins} onChange={e => setSettings({ ...settings, margins: Number(e.target.value) })} className="w-full" />
+              <div className="text-xs text-gray-500">{settings.margins}</div>
             </div>
             <div>
               <label className="block text-gray-700 text-sm mb-2">Corners</label>
-              <input type="range" min={0} max={50} value={corners} onChange={e => setCorners(Number(e.target.value))} className="w-full" />
-              <div className="text-xs text-gray-500">{corners}</div>
+              <input type="range" min={0} max={50} value={settings.corners} onChange={e => setSettings({ ...settings, corners: Number(e.target.value) })} className="w-full" />
+              <div className="text-xs text-gray-500">{settings.corners}</div>
             </div>
           </div>
           {/* Right column */}
           <div className="space-y-6">
             <div>
               <label className="block text-gray-700 text-sm mb-2">Text Color</label>
-              <input type="color" value={textColor} onChange={e => setTextColor(e.target.value)} className="w-12 h-8 p-0 border-0" />
+              <input type="color" value={settings.textColor} onChange={e => setSettings({ ...settings, textColor: e.target.value })} className="w-12 h-8 p-0 border-0" />
             </div>
             <div>
               <label className="block text-gray-700 text-sm mb-2">Background Color</label>
-              <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} className="w-12 h-8 p-0 border-0" />
+              <input type="color" value={settings.bgColor} onChange={e => setSettings({ ...settings, bgColor: e.target.value })} className="w-12 h-8 p-0 border-0" />
             </div>
             <div>
               <label className="block text-gray-700 text-sm mb-2">Booth Color Scheme</label>
-              <select value={colorScheme} onChange={e => setColorScheme(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2">
+              <select value={settings.colorScheme} onChange={e => setSettings({ ...settings, colorScheme: e.target.value })} className="w-full border border-gray-300 rounded px-4 py-2">
                 {COLOR_SCHEMES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-gray-700 text-sm mb-2">Camera</label>
-              <select value={camera} onChange={e => setCamera(e.target.value)} className="w-full border border-gray-300 rounded px-4 py-2">
+              <select value={settings.camera} onChange={e => setSettings({ ...settings, camera: e.target.value })} className="w-full border border-gray-300 rounded px-4 py-2">
                 <option value="Front">Front</option>
                 <option value="Back">Back</option>
               </select>
             </div>
             <div className="flex items-center gap-2">
-              <input type="checkbox" checked={showGetReady} onChange={e => setShowGetReady(e.target.checked)} id="getready" />
+              <input type="checkbox" checked={settings.showGetReady} onChange={e => setSettings({ ...settings, showGetReady: e.target.checked })} id="getready" />
               <label htmlFor="getready" className="text-gray-700 text-sm">Show "Get Ready" Prompt</label>
             </div>
             <div>
               <label className="block text-gray-700 text-sm mb-2">Countdown seconds</label>
-              <input type="number" min={1} max={10} value={countdown} onChange={e => setCountdown(Number(e.target.value))} className="w-full border border-gray-300 rounded px-4 py-2" />
+              <input type="number" min={1} max={10} value={settings.countdown} onChange={e => setSettings({ ...settings, countdown: Number(e.target.value) })} className="w-full border border-gray-300 rounded px-4 py-2" />
             </div>
             <div>
               <label className="block text-gray-700 text-sm mb-2">Start delay seconds</label>
-              <input type="number" min={0} max={10} value={startDelay} onChange={e => setStartDelay(Number(e.target.value))} className="w-full border border-gray-300 rounded px-4 py-2" />
+              <input type="number" min={0} max={10} value={settings.startDelay} onChange={e => setSettings({ ...settings, startDelay: Number(e.target.value) })} className="w-full border border-gray-300 rounded px-4 py-2" />
             </div>
             <div>
               <label className="block text-gray-700 text-sm mb-2">Background Image (Portrait)</label>
-              <input type="file" accept="image/*" onChange={e => setStartScreenPortrait(e.target.files?.[0] || null)} className="w-full" />
+              <input type="file" accept="image/*" onChange={e => setSettings({ ...settings, startScreenPortrait: e.target.files?.[0] || null })} className="w-full" />
             </div>
             <div>
               <label className="block text-gray-700 text-sm mb-2">Background Image (Landscape)</label>
-              <input type="file" accept="image/*" onChange={e => setStartScreenLandscape(e.target.files?.[0] || null)} className="w-full" />
+              <input type="file" accept="image/*" onChange={e => setSettings({ ...settings, startScreenLandscape: e.target.files?.[0] || null })} className="w-full" />
             </div>
           </div>
           <div className="md:col-span-2">
             <button
               type="submit"
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded mt-4 transition-colors text-lg"
+              className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded mt-4 transition-colors text-lg ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isLoading}
             >
-              Create Event
+              {isLoading ? 'Creating...' : 'Create Event'}
             </button>
           </div>
         </form>

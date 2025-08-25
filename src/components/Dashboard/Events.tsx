@@ -1,8 +1,42 @@
-import React, { useState } from 'react';
+'use client';
+import React, { useState, useEffect } from 'react';
 import { MdEvent } from "react-icons/md";
 import TemplateModal from './TemplateModal';
+import { userApi } from '@/firebase/event';
+import { userStore } from '@/recoil';
+import { useRecoilValue } from 'recoil';
+import { useRouter } from 'next/router';
+
+interface Event {
+  id: string;
+  eventName: string;
+  createdAt: string;
+}
+
 export default function Events() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const currentUser = useRecoilValue(userStore) as {id:""};
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      const userId = currentUser?.id || "exampleUserId"; // Replace with actual user ID from authentication
+      console.log("Fetching events for user ID:", userId);
+      const result = await userApi.getUserEvents(userId);
+      console.log("API response:", result);
+      if (result.success) {
+         setEvents(result.events as Event[]);
+      } else {
+        console.error(result.message);
+      }
+      setIsLoading(false);
+    };
+    fetchEvents();
+  }, []);
+  console.log(events, 'events....');
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -11,39 +45,47 @@ export default function Events() {
       </div>
 
       {/* Event Credits */}
-      <div className=" rounded-lg  border-gray-200 p-6">
+      <div className="rounded-lg border-gray-200 p-6">
         <h2 className="text-lg font-light text-gray-900 mb-2">Event Credits</h2>
         <p className="text-gray-600 mb-4">You have 0 free event(s) left</p>
-        <button className="bg-[#891F0C] text-white px-10 py-3 rounded-sm text-sm cursor-pointer font-medium hover:bg-[#7a1a0a] transition-colors flex items-center gap-2"
-              style={{
-                  background: 'linear-gradient(88.56deg, #891F0C 34.23%, #040D34 96.67%)'
-                }}
-              onClick={() => setModalOpen(true)}
-          >
-          {/* <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg> */}
+        <button
+          className="bg-[#891F0C] text-white px-10 py-3 rounded-sm text-sm cursor-pointer font-medium hover:bg-[#7a1a0a] transition-colors flex items-center gap-2"
+          style={{ background: 'linear-gradient(88.56deg, #891F0C 34.23%, #040D34 96.67%)' }}
+          onClick={() => setModalOpen(true)}
+        >
           Create An Event
         </button>
       </div>
 
       {/* Upcoming Events */}
-      <div className="rounded-lg  border-gray-200 p-6">
+      <div className="rounded-lg border-gray-200 p-6">
         <h2 className="text-lg font-light text-gray-900 mb-4">All Events</h2>
-        <div className="bg-white rounded-sm shadow flex items-center space-x-5 py-6 px-5 ">
-          <h5 className='bg-gray-200 flex rounded-full items-center justify-center p-3'>
-              <MdEvent className='text-3xl text-gray-500'/>
-          </h5>
-          <p className="text-gray-500">No Events</p>
-        </div>
+        {isLoading ? (
+          <div className="text-center text-gray-500">Loading events...</div>
+        ) : events.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {events.map(event => (
+              <div
+                key={event.id}
+                className="bg-white rounded-sm shadow p-4 cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => router.push(`/event/${event.id}`)}
+              >
+                <h5 className="text-lg font-semibold text-gray-900 mb-2">{event.eventName}</h5>
+                <p className="text-sm text-gray-600">{new Date(event.createdAt).toLocaleDateString()}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-sm shadow flex items-center space-x-5 py-6 px-5">
+            <h5 className='bg-gray-200 flex rounded-full items-center justify-center p-3'>
+              <MdEvent className='text-3xl text-gray-500' />
+            </h5>
+            <p className="text-gray-500">No Events</p>
+          </div>
+        )}
       </div>
 
       <TemplateModal open={modalOpen} onClose={() => setModalOpen(false)} />
-
-      {/* Description */}
-      {/* <div className="text-sm text-gray-600 text-center">
-        Each event has a gallery, where the photos & videos live. When guests enter their contact data on the iPad, it gets stored on the event.
-      </div> */}
     </div>
   );
-} 
+}
