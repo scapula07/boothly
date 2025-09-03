@@ -4,11 +4,20 @@ import Header from './Header';
 import Controls from './Controls';
 import Workstation from './Workstation';
 
-type PlaygroundProps = {
-  tenant: TenantConfig;
-};
 
-export default function Playground({ tenant }: PlaygroundProps) {
+interface Event {
+  id: string;
+  name: string;
+  date: string;
+  primaryColor?: string;
+  accentColor?: string;
+  gradientFrom?: string;
+  gradientTo?: string;
+  ctaText?: string;
+  [key: string]: any; // Add additional fields as needed
+}
+
+export default function Playground({ tenant }: { tenant: Event }) {
   const [prompt, setPrompt] = useState('Create a 10s hype clip with bold captions and fast cuts.');
 
   return (

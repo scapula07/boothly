@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export function PricingSection() {
+export function PricingSection({id}: {id?: string}) {
   const [isAnnual, setIsAnnual] = useState(false);
 
   const plans = [

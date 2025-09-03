@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Layout from '@/components/Dashboard/Layout';
 import Events from '@/components/Dashboard/Events';
-import ImageUpload from '@/components/Dashboard/ImageUpload';
+// import ImageUpload from '@/components/Dashboard/ImageUpload';
 
 
 export default function Dashboard() {
