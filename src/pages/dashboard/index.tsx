@@ -8,12 +8,12 @@ export default function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
     <Layout>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-semibold text-gray-900">Dashboard</h1>
+      <div className="space-y-4 md:space-y-6">
+        <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">Dashboard</h1>
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-light text-gray-900 mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+            <h2 className="text-base md:text-lg font-light text-gray-900 mb-3 md:mb-4">Quick Actions</h2>
             <div className="space-y-3">
               <button
                 className="w-full text-white px-4 py-2 rounded-lg bg-[#292524] hover:bg-[#1c1917] transition-colors cursor-pointer"
