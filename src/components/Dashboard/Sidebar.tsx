@@ -17,16 +17,16 @@ export function Sidebar() {
       <nav className="flex-1 flex flex-col gap-2">
         <a
           href="/dashboard"
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition ${isActive('/dashboard') ? 'bg-[#f3e7e3] text-[#891F0C]' : 'text-gray-800 hover:bg-gray-100'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition ${isActive('/dashboard') ? 'bg-[#292524] text-white' : 'text-gray-800 hover:bg-[#292524] hover:text-white'}`}
         >
-          <svg className="w-5 h-5 text-[#891F0C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6" /></svg>
+          <svg className={`w-5 h-5 ${isActive('/dashboard') ? 'text-white' : 'text-[#292524]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6" /></svg>
           Dashboard
         </a>
         <a
           href="/dashboard/events"
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition ${isActive('/dashboard/events') ? 'bg-[#f3e7e3] text-[#891F0C]' : 'text-gray-800 hover:bg-gray-100'}`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition ${isActive('/dashboard/events') ? 'bg-[#292524] text-white' : 'text-gray-800 hover:bg-[#292524] hover:text-white'}`}
         >
-          <svg className="w-5 h-5 text-[#891F0C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          <svg className={`w-5 h-5 ${isActive('/dashboard/events') ? 'text-white' : 'text-[#292524]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
           Events
         </a>
       </nav>

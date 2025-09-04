@@ -2,10 +2,10 @@ import React, { useState, useRef, ReactElement } from 'react';
 import Toolbar from './Toolbar';
 import BrowserWhipStreamer from './browserWhip';
 import { createStream, updatePrompt } from '@/lib/api';
-// import { uploadFile } from '@/firebase/upload'; // UNUSED: remove if not needed
-// import { userApi } from '@/firebase/event';     // UNUSED: remove if not needed
+import { uploadFile } from '@/firebase/upload';
+import { userApi } from '@/firebase/event';
 
-type CanvasProps = {
+interface CanvasProps {
   mainSrc: string;
   insetSrc: string;
   streamData: any;
@@ -18,18 +18,9 @@ type CanvasProps = {
     recordings?: string[];
     [key: string]: any;
   };
-};
+}
 
-const Canvas: React.FC<CanvasProps> = ({
-  mainSrc,
-  insetSrc,
-  streamData,
-  setStreamData,
-  currentView,
-  onViewChange,
-  tenant
-}): ReactElement => {
-  // Component state
+const Canvas: React.FC<CanvasProps> = ({ mainSrc, insetSrc, streamData, setStreamData, currentView, onViewChange, tenant }) => {
   const [loading, setLoading] = useState(false);
   const [streaming, setStreaming] = useState(false);
   const [wandOpen, setWandOpen] = useState(false);
@@ -38,21 +29,17 @@ const Canvas: React.FC<CanvasProps> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [isTabOpened, setIsTabOpened] = useState(false);
 
-  // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const outputVideoRef = useRef<HTMLVideoElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
-  const canvasRef = useRef<HTMLCanvasElement>(null);        // ✅ keep only one
-  const hiddenVideoRef = useRef<HTMLVideoElement>(null);     // ✅ keep only one
-  const rafIdRef = useRef<number | null>(null);              // ✅ control animation loop
-  const screenStreamRef = useRef<MediaStream | null>(null);  // ✅ enable cleanup
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hiddenVideoRef = useRef<HTMLVideoElement>(null);
 
   const isLvprtv = mainSrc && mainSrc.includes('lvprtv');
 
-  // Stream handling functions
-  async function startStreaming() {
+  const startStreaming = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -70,33 +57,31 @@ const Canvas: React.FC<CanvasProps> = ({
         pc.addTrack(track, mediaStream);
       });
 
-      pc.createDataChannel('chat');
-
+      pc.createDataChannel("chat");
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
 
       const sdpResponse = await fetch(streamData?.whip_url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/sdp',
+          "Content-Type": "application/sdp",
         },
         body: offer.sdp,
       });
 
-      if (!sdpResponse.ok) throw new Error('WHIP Offer failed');
+      if (!sdpResponse.ok) throw new Error("WHIP Offer failed");
 
       const answerSDP = await sdpResponse.text();
       await pc.setRemoteDescription({
-        type: 'answer',
+        type: "answer",
         sdp: answerSDP,
       });
 
       setStreaming(true);
-      console.log('✅ Streaming started to WHIP URL');
     } catch (err) {
-      console.error('❌ Error starting WHIP stream:', err);
+      console.error("❌ Error starting WHIP stream:", err);
     }
-  }
+  };
 
   const stopStreaming = () => {
     try {
@@ -107,18 +92,17 @@ const Canvas: React.FC<CanvasProps> = ({
 
       if (videoRef.current && videoRef.current.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach((track) => track.stop());
+        stream.getTracks().forEach(track => track.stop());
         videoRef.current.srcObject = null;
       }
 
       setStreaming(false);
-      console.log('✅ Streaming stopped');
     } catch (err) {
-      console.error('❌ Error stopping stream:', err);
+      console.error("❌ Error stopping stream:", err);
     }
   };
 
-  async function handleCreate() {
+  const handleCreate = async () => {
     setLoading(true);
     try {
       const data = await createStream();
@@ -129,29 +113,26 @@ const Canvas: React.FC<CanvasProps> = ({
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  // Recording functions (16:9 enforced)
   const startRecording = async () => {
     try {
-      setIsRecording(false); // reset
+      setIsRecording(false);
       recordedChunksRef.current = [];
-
+      
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         video: {
-          displaySurface: 'browser',
+          displaySurface: "browser",
           frameRate: { ideal: 30 },
           width: { ideal: 1920 },
-          height: { ideal: 1080 },
+          height: { ideal: 1080 }
         },
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          sampleRate: 44100,
-        },
+          sampleRate: 44100
+        }
       });
-
-      screenStreamRef.current = displayStream;
 
       if (hiddenVideoRef.current && canvasRef.current) {
         hiddenVideoRef.current.srcObject = displayStream;
@@ -161,32 +142,27 @@ const Canvas: React.FC<CanvasProps> = ({
         canvas.width = 1280;
         canvas.height = 720;
         const ctx = canvas.getContext('2d');
-        if (!ctx) throw new Error('Could not get canvas context');
 
-        // ✅ set recording state BEFORE starting the draw loop
-        setIsRecording(true);
+        if (!ctx) {
+          throw new Error('Could not get canvas context');
+        }
 
         const drawVideoFrame = () => {
           if (!hiddenVideoRef.current || !canvasRef.current) return;
-
+          
           const video = hiddenVideoRef.current;
-          const canvas = canvasRef.current!;
+          const canvas = canvasRef.current;
           const ctx = canvas.getContext('2d')!;
 
           const videoAspect = video.videoWidth / video.videoHeight;
           const canvasAspect = canvas.width / canvas.height;
-
-          let sx = 0,
-            sy = 0,
-            sw = video.videoWidth,
-            sh = video.videoHeight;
-
+          
+          let sx = 0, sy = 0, sw = video.videoWidth, sh = video.videoHeight;
+          
           if (videoAspect > canvasAspect) {
-            // Wider than 16:9
             sw = video.videoHeight * canvasAspect;
             sx = (video.videoWidth - sw) / 2;
           } else {
-            // Taller than 16:9
             sh = video.videoWidth / canvasAspect;
             sy = (video.videoHeight - sh) / 2;
           }
@@ -195,22 +171,21 @@ const Canvas: React.FC<CanvasProps> = ({
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
 
-          // ✅ keep drawing until we explicitly stop
-          rafIdRef.current = requestAnimationFrame(drawVideoFrame);
+          if (isRecording) {
+            requestAnimationFrame(drawVideoFrame);
+          }
         };
 
-        // Start drawing frames (independent of isRecording boolean)
         drawVideoFrame();
 
         const canvasStream = canvas.captureStream(30);
-
         const audioTrack = displayStream.getAudioTracks()[0];
         if (audioTrack) {
           canvasStream.addTrack(audioTrack);
         }
 
         const mediaRecorder = new MediaRecorder(canvasStream, {
-          mimeType: 'video/webm;codecs=vp8,opus',
+          mimeType: 'video/webm;codecs=vp8,opus'
         });
 
         mediaRecorder.ondataavailable = (e) => {
@@ -219,74 +194,74 @@ const Canvas: React.FC<CanvasProps> = ({
           }
         };
 
-        // optional: create a Blob when stopping to let caller upload or download
-        mediaRecorder.onstop = () => {
-          if (rafIdRef.current) {
-            cancelAnimationFrame(rafIdRef.current);
-            rafIdRef.current = null;
-          }
-          if (screenStreamRef.current) {
-            screenStreamRef.current.getTracks().forEach((t) => t.stop());
-            screenStreamRef.current = null;
-          }
+        mediaRecorder.onstop = async () => {
+          try {
+            setLoading(true);
+            displayStream.getTracks().forEach(track => track.stop());
+            canvasStream.getTracks().forEach(track => track.stop());
 
-          const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-          // Example: trigger a download (remove if you’ll upload instead)
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `recording-${Date.now()}.webm`;
-          a.click();
-          URL.revokeObjectURL(url);
+            const blob = new Blob(recordedChunksRef.current, {
+              type: 'video/webm'
+            });
+            recordedChunksRef.current = [];
 
-          setIsRecording(false);
+            const file = new File([blob], `recording-${Date.now()}.webm`, { type: 'video/webm' });
+            const fileUrl = await uploadFile(file);
+
+            if (tenant?.id && fileUrl) {
+              try {
+                const eventDoc = await userApi.getEventById(tenant.id);
+                if (!eventDoc) {
+                  throw new Error('Event not found');
+                }
+                
+                await userApi.updateEvent(tenant.id, {
+                  recordings: [...(eventDoc.recordings || []), fileUrl],
+                  status: 'recorded'
+                });
+              } catch (error) {
+                console.error('Error updating event:', error);
+                throw error;
+              }
+            }
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            document.body.appendChild(a);
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `recording-${Date.now()}.webm`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+          } catch (error) {
+            console.error('Error handling recording:', error);
+            alert('Failed to save recording. Please try again.');
+          } finally {
+            setLoading(false);
+            setIsRecording(false);
+          }
         };
 
         mediaRecorderRef.current = mediaRecorder;
-        mediaRecorder.start();
-      } // ✅ close the if block properly
+        mediaRecorderRef.current.start();
+        setIsRecording(true);
+      }
     } catch (error) {
       console.error('Error starting screen recording:', error);
       setIsRecording(false);
-      // Cleanup any partial streams
-      if (screenStreamRef.current) {
-        screenStreamRef.current.getTracks().forEach((t) => t.stop());
-        screenStreamRef.current = null;
-      }
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
     }
   };
 
   const stopRecording = () => {
-    const mr = mediaRecorderRef.current;
-    if (mr && mr.state !== 'inactive') {
-      mr.stop();
-    } else {
-      // Ensure cleanup if something went out of sync
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
-      if (screenStreamRef.current) {
-        screenStreamRef.current.getTracks().forEach((t) => t.stop());
-        screenStreamRef.current = null;
-      }
-      setIsRecording(false);
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
     }
   };
 
   return (
     <div className="relative rounded-xl overflow-hidden border border-black/10 bg-black/5 w-full h-[80vh] min-h-[600px]">
-      {/* Hidden elements for 16:9 recording */}
-      <div style={{ display: 'none' }}>
-        <video ref={hiddenVideoRef} muted />
-        <canvas ref={canvasRef} />
-      </div>
-
-      {/* Loading overlay */}
       {loading && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className="flex flex-col items-center gap-3">
@@ -299,127 +274,29 @@ const Canvas: React.FC<CanvasProps> = ({
         </div>
       )}
 
-      {/* Output (pre-render) as iframe if lvprtv url, else video */}
       <iframe
         src={`https://lvpr.tv/?v=${streamData?.output_playback_id}`}
         className="absolute inset-0 w-full h-full"
         style={{ border: 'none' }}
         allow="autoplay; encrypted-media"
         allowFullScreen
-      ></iframe>
+      />
 
       <div className="absolute top-10 right-6 z-10">
         <Toolbar currentView={currentView} onViewChange={onViewChange} />
       </div>
 
-      {/* Input video (inset) + Photo Booth */}
       <div className="absolute left-8 bottom-16 z-10 flex flex-col items-center">
         <div className="rounded-xl overflow-hidden border border-black/10 shadow-lg relative">
           <BrowserWhipStreamer whipUrl={streamData?.whip_url} videoRef={videoRef} />
         </div>
       </div>
 
-      {/* Magic Wand Prompt card center-bottom, collapsible */}
-      {wandOpen ? (
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-16 z-10">
-          <div
-            className="rounded-2xl bg-white/10 backdrop-blur-lg border border-white/30 shadow w-[340px] px-0 py-0 overflow-hidden relative"
-            style={{ boxShadow: '0 4px 32px 0 rgba(0,0,0,0.18)' }}
-          >
-            <div className="flex items-center justify-between px-5 pt-4 pb-2">
-              <div className="flex items-center gap-2 text-white font-medium text-lg">
-                Magic Wand
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeWidth={2} strokeLinecap="round" d="M3 21l9-9" />
-                  <path strokeWidth={2} strokeLinecap="round" d="M15 6l3-3M12 3l1-1M20 10l1-1" />
-                </svg>
-              </div>
-              <button
-                className="ml-2 p-1 rounded-full hover:bg-white/20"
-                onClick={() => setWandOpen(false)}
-                aria-label="Collapse Magic Wand"
-              >
-                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <line x1="18" y1="6" x2="6" y2="18" strokeWidth="2.5" strokeLinecap="round" />
-                  <line x1="6" y1="6" x2="18" y2="18" strokeWidth="2.5" strokeLinecap="round" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="w-full h-px bg-white/30" />
-
-            <form
-              className="w-full px-5 pt-3 pb-5"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                if (!prompt.trim() || !streamData?.id) return;
-                setPromptLoading(true);
-                try {
-                  await updatePrompt(streamData.id, { prompt });
-                } catch (err) {
-                  alert('Failed to update prompt');
-                } finally {
-                  setPromptLoading(false);
-                }
-              }}
-            >
-              <textarea
-                className="w-full min-h-[32px] max-h-32 resize-none overflow-auto bg-transparent text-white placeholder:text-white/80 focus:outline-none text-base font-normal"
-                placeholder="Make a prompt and we'll make it come true..."
-                value={prompt}
-                onChange={(e) => {
-                  setPrompt(e.target.value);
-                  e.target.style.height = 'auto';
-                  e.target.style.height = e.target.scrollHeight + 'px';
-                }}
-                disabled={promptLoading}
-                rows={1}
-              />
-              <button
-                type="submit"
-                className="absolute right-8 bottom-7 rounded-full bg-white/20 p-2 border border-white/30 shadow flex items-center justify-center hover:bg-white/40 transition-colors text-white disabled:opacity-50"
-                disabled={promptLoading || !prompt.trim()}
-                aria-label="Send Prompt"
-                style={{ marginTop: '-40px' }}
-              >
-                {promptLoading ? (
-                  <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                )}
-              </button>
-            </form>
-          </div>
-        </div>
-      ) : (
-        <div className="absolute bottom-4 right-8 z-20 group">
-          <button
-            className="rounded-full bg-black/5 p-3 border border-white/40 shadow flex items-center justify-center hover:bg-black transition-colors"
-            onClick={() => setWandOpen(true)}
-            aria-label="Expand Magic Wand"
-          >
-            <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeWidth={2} strokeLinecap="round" d="M3 21l9-9" />
-              <path strokeWidth={2} strokeLinecap="round" d="M15 6l3-3M12 3l1-1M20 10l1-1" />
-            </svg>
-          </button>
-          <span className="absolute right-0 bottom-full mb-2 px-2 py-1 rounded bg-black/80 text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
-            Show Magic Wand
-          </span>
-        </div>
-      )}
-
-      {/* Bottom actions */}
       <div className="absolute left-1/2 -translate-x-1/2 bottom-4 flex items-center gap-6 z-10">
         {!streamData ? (
           <button
             onClick={handleCreate}
-            className="px-8 py-3 rounded-full bg-gradient-to-r from-[#891F0C] to-[#040D34] text-white font-light shadow-lg text-sm flex items-center gap-2" /* ✅ fixed typo */
+            className="px-8 py-3 rounded-full bg-gradient-to-r from-[#891F0C] to-[#040D34] text-white font-lightso if shadow-lg text-sm flex items-center gap-2"
             disabled={loading}
           >
             Start stream
@@ -433,16 +310,12 @@ const Canvas: React.FC<CanvasProps> = ({
                   streaming ? 'bg-red-500/80 hover:bg-red-600 scale-105' : 'bg-emerald-500/80 hover:bg-emerald-600'
                 }`}
                 disabled={loading}
-                aria-label={streaming ? 'Stop Camera Stream' : 'Start Camera Stream'}
+                aria-label={streaming ? "Stop Camera Stream" : "Start Camera Stream"}
               >
                 {loading ? (
                   <svg className="w-5 h-5 text-white animate-spin" viewBox="0 0 24 24" fill="none">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                   </svg>
                 ) : streaming ? (
                   <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -454,9 +327,9 @@ const Canvas: React.FC<CanvasProps> = ({
                   </svg>
                 )}
               </button>
-
+              
               <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-2 py-1 rounded bg-black/80 text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
-                {streaming ? 'Stop Camera Stream' : 'Start Camera Stream'}
+                {streaming ? "Stop Camera Stream" : "Start Camera Stream"}
               </span>
             </div>
 
@@ -486,14 +359,17 @@ const Canvas: React.FC<CanvasProps> = ({
             <div className="relative group">
               <button
                 onClick={() => {
-                  if (!isRecording) startRecording();
-                  else stopRecording();
+                  if (!isRecording) {
+                    startRecording();
+                  } else {
+                    stopRecording();
+                  }
                 }}
                 className={`w-12 h-12 rounded-full backdrop-blur border border-white/40 flex items-center justify-center hover:bg-black transition-colors ${
                   isRecording ? 'bg-red-500' : 'bg-black/5'
                 }`}
                 disabled={!streamData?.output_playback_id || !isTabOpened}
-                aria-label={isRecording ? 'Stop Recording' : 'Start Recording'}
+                aria-label={isRecording ? "Stop Recording" : "Start Recording"}
               >
                 {isRecording ? (
                   <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -506,7 +382,7 @@ const Canvas: React.FC<CanvasProps> = ({
                 )}
               </button>
               <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-2 py-1 rounded bg-black/80 text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-20 transition-opacity">
-                {!isTabOpened ? 'Open stream in new tab before recording' : isRecording ? 'Stop Recording' : 'Start Recording'}
+                {!isTabOpened ? "Open stream in new tab before recording" : (isRecording ? "Stop Recording" : "Start Recording")}
               </span>
             </div>
           </>

@@ -15,7 +15,40 @@ import {
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 
+interface EventData {
+  id: string;
+  eventName: string;
+  templateId: string;
+  recordings?: string[];
+  status?: string;
+  creatorId: string;
+  createdAt: string;
+  updatedAt?: string;
+  settings?: Record<string, any>;
+  customFields?: Record<string, any>;
+  [key: string]: any;
+}
+
 export const userApi = {
+  getEventById: async function(eventId: string): Promise<EventData | null> {
+    try {
+      const eventRef = doc(db, "events", eventId);
+      const eventDoc = await getDoc(eventRef);
+      
+      if (!eventDoc.exists()) {
+        return null;
+      }
+
+      return {
+        id: eventDoc.id,
+        ...eventDoc.data()
+      } as EventData;
+    } catch (error) {
+      console.error("Error fetching event:", error);
+      return null;
+    }
+  },
+
   createEvent: async function (
     userId: string,
     data: { templateId: string; eventName: string }
@@ -81,6 +114,53 @@ export const userApi = {
       return {
         success: false,
         message: "Failed to delete event. Please try again.",
+      };
+    }
+  },
+
+  updateEvent: async function (
+    eventId: string,
+    updateData: {
+      templateId?: string;
+      eventName?: string;
+      recordings?: string[];
+      status?: string;
+      settings?: Record<string, any>;
+      customFields?: Record<string, any>;
+      [key: string]: any;
+    }
+  ) {
+    try {
+      const eventRef = doc(db, "events", eventId);
+      
+      // First check if event exists
+      const eventDoc = await getDoc(eventRef);
+      if (!eventDoc.exists()) {
+        return {
+          success: false,
+          message: "Event not found",
+        };
+      }
+
+      // Add metadata to update
+      const dataToUpdate = {
+        ...updateData,
+        updatedAt: new Date().toISOString(),
+      };
+
+      await updateDoc(eventRef, dataToUpdate);
+
+      return {
+        success: true,
+        message: "Event updated successfully!",
+        updatedFields: Object.keys(updateData),
+      };
+    } catch (error) {
+      console.error("Error updating event:", error);
+      return {
+        success: false,
+        message: "Failed to update event. Please try again.",
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   },

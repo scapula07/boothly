@@ -121,7 +121,7 @@ export default function CreateEvent() {
                   <button
                     type="button"
                     key={type}
-                    className={`px-4 py-2 rounded border ${settings.imageType === type ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-700 border-gray-300'} font-medium`}
+                    className={`px-4 py-2 rounded border ${settings.imageType === type ? 'bg-[#292524] text-white border-[#292524]' : 'bg-white text-gray-700 border-gray-300'} font-medium hover:bg-[#292524] hover:text-white hover:border-[#292524] transition-colors`}
                     onClick={() => setSettings({ ...settings, imageType: type })}
                   >
                     {type}
@@ -136,7 +136,7 @@ export default function CreateEvent() {
                   <button
                     type="button"
                     key={l}
-                    className={`px-4 py-2 rounded border ${settings.layout === l ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-700 border-gray-300'} font-medium`}
+                    className={`px-4 py-2 rounded border ${settings.layout === l ? 'bg-[#292524] text-white border-[#292524]' : 'bg-white text-gray-700 border-gray-300'} font-medium hover:bg-[#292524] hover:text-white hover:border-[#292524] transition-colors`}
                     onClick={() => setSettings({ ...settings, layout: l })}
                   >
                     {l}
@@ -151,7 +151,7 @@ export default function CreateEvent() {
                   <button
                     type="button"
                     key={c.value}
-                    className={`px-4 py-2 rounded border ${settings.crop === c.value ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-700 border-gray-300'} font-medium`}
+                    className={`px-4 py-2 rounded border ${settings.crop === c.value ? 'bg-[#292524] text-white border-[#292524]' : 'bg-white text-gray-700 border-gray-300'} font-medium hover:bg-[#292524] hover:text-white hover:border-[#292524] transition-colors`}
                     onClick={() => setSettings({ ...settings, crop: c.value })}
                   >
                     {c.label}
@@ -217,7 +217,7 @@ export default function CreateEvent() {
           <div className="md:col-span-2">
             <button
               type="submit"
-              className={`w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded mt-4 transition-colors text-lg ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full bg-[#292524] hover:bg-[#1c1917] text-white font-semibold py-3 rounded mt-4 transition-colors text-lg ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={isLoading}
             >
               {isLoading ? 'Creating...' : 'Create Event'}

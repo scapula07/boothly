@@ -16,19 +16,16 @@ export default function Dashboard() {
             <h2 className="text-lg font-light text-gray-900 mb-4">Quick Actions</h2>
             <div className="space-y-3">
               <button
-                className="w-full text-white px-4 py-2 rounded-lg transition-colors cursor-pointer"
-                style={{
-                  background: 'linear-gradient(88.56deg, #891F0C 34.23%, #040D34 96.67%)'
-                }}
+                className="w-full text-white px-4 py-2 rounded-lg bg-[#292524] hover:bg-[#1c1917] transition-colors cursor-pointer"
                 onClick={() => {
                   window.location.href = '/dashboard/events';
                 }}
               >
                 Start New Event
               </button>
-              <button className="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+              {/* <button className="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
                 Upload Media
-              </button>
+              </button> */}
             </div>
           </div>
           <div className="bg-white rounded-lg border border-gray-200 p-6">

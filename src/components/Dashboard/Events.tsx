@@ -49,8 +49,7 @@ export default function Events() {
         <h2 className="text-lg font-light text-gray-900 mb-2">Event Credits</h2>
         <p className="text-gray-600 mb-4">You have 0 free event(s) left</p>
         <button
-          className="bg-[#891F0C] text-white px-10 py-3 rounded-sm text-sm cursor-pointer font-medium hover:bg-[#7a1a0a] transition-colors flex items-center gap-2"
-          style={{ background: 'linear-gradient(88.56deg, #891F0C 34.23%, #040D34 96.67%)' }}
+          className="bg-[#292524] text-white px-10 py-3 rounded-sm text-sm cursor-pointer font-medium hover:bg-[#1c1917] transition-colors flex items-center gap-2"
           onClick={() => setModalOpen(true)}
         >
           Create An Event

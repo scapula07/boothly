@@ -12,15 +12,14 @@ export default function NavBar() {
   };
 
   return (
-    <div className="w-full flex items-center justify-center text-white">
-      <div className="flex items-center px-10 w-[80%] h-[74px] justify-between rounded-[20px] backdrop-blur-[15px] shadow border-[1px] border-[#FFFFFF26] border-solid">
+    <div className="w-full flex items-center justify-center text-white px-4">
+      <div className="flex items-center px-4 sm:px-10 w-full sm:w-[90%] md:w-[80%] h-[74px] justify-between rounded-[20px] backdrop-blur-[15px] shadow border-[1px] border-[#FFFFFF26] border-solid">
         {/* Logo */}
         <img src="/boothly.png" className="h-[23.4px] w-[94.9px]" />
-        {/* Nav Items */}
-        <div className="flex items-center gap-8">
+        {/* Nav Items - Hidden on mobile, visible on tablet and up */}
+        <div className="hidden md:flex items-center gap-4 lg:gap-8">
           {[
             { label: "Home", id: "hero" },
-           
             { label: "Watch a Demo", id: "video-demo" },
             { label: "Pricing", id: "pricing-section" },
             { label: "Contact", id: "footer" },

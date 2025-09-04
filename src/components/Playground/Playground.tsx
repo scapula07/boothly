@@ -24,7 +24,7 @@ export default function Playground({ tenant }: { tenant: Event }) {
     <div className="min-h-screen" >
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
         <Header tenant={tenant} />
-        <Workstation />
+        <Workstation tenant={tenant}/>
         {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Controls tenant={tenant} prompt={prompt} setPrompt={setPrompt} />
           <div className="hidden lg:block" />

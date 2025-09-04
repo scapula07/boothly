@@ -68,12 +68,17 @@ Pricing Designed for Brands That Refuse to Blend In.
               </h5>
             </div>
       <div className="max-w-6xl mx-auto px-4">
+        {/* Section Title */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+          <p className="text-gray-600 text-sm sm:text-base max-w-xl mx-auto">Choose the plan that's right for your event needs</p>
+        </div>
         {/* Segmented control */}
         <div className="flex justify-center mb-8 sm:mb-12">
           <div className="inline-flex items-center rounded-lg bg-gray-100 p-1">
             <button
               onClick={() => setIsAnnual(false)}
-              className={`h-9 px-5 rounded-md text-sm font-medium transition-colors ${
+              className={`h-8 sm:h-9 px-3 sm:px-5 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                 !isAnnual ? 'bg-white text-gray-900' : ''
               }`}
             >
@@ -81,7 +86,7 @@ Pricing Designed for Brands That Refuse to Blend In.
             </button>
             <button
               onClick={() => setIsAnnual(true)}
-              className={`h-9 px-5 rounded-md text-sm font-medium transition-colors ${
+              className={`h-8 sm:h-9 px-3 sm:px-5 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                 isAnnual ? 'bg-white text-gray-900' : ''
               }`}
             >
@@ -91,7 +96,7 @@ Pricing Designed for Brands That Refuse to Blend In.
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10 place-items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10 place-items-center max-w-7xl mx-auto px-4">
           {plans.map((plan) => {
             const isBasic = plan.isBasic;
             return (
@@ -99,10 +104,10 @@ Pricing Designed for Brands That Refuse to Blend In.
                 key={plan.name}
                 className={`${
                   isBasic
-                    ? // Basic card exact layout
-                      `relative bg-white text-black rounded-[12px] ${plan.ring} ${plan.opacity} pt-[32px] pr-[31px] pb-[32px] pl-[31px] w-full md:w-[384px] md:h-[833px]`
-                    : // Starter/Premium exact layout
-                      `relative bg-white text-black rounded-[12px] ${plan.ring} ${plan.opacity} ${plan.blur ?? ''} pt-[32px] pr-[31px] pb-[32px] pl-[31px] w-full md:w-[384px] md:h-[693px]`
+                    ? // Basic card responsive layout
+                      `relative bg-white text-black rounded-[12px] ${plan.ring} ${plan.opacity} p-6 sm:p-8 w-full max-w-[384px] min-h-[600px] sm:min-h-[693px] lg:min-h-[833px]`
+                    : // Starter/Premium responsive layout
+                      `relative bg-white text-black rounded-[12px] ${plan.ring} ${plan.opacity} ${plan.blur ?? ''} p-6 sm:p-8 w-full max-w-[384px] min-h-[600px] sm:min-h-[693px]`
                 }`}
               >
                 <div className="flex flex-col h-full">

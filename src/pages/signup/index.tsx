@@ -77,15 +77,15 @@ export default function Signup() {
           <p className="text-sm text-gray-500">Already have an account? <a href="/login" className="underline">Log in</a></p>
         </div>
         {/* Right Side: Gradient and Chat Input */}
-        <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-[#f8fafc] via-[#e0e7ff] to-[#fbc2eb] relative h-full">
+        <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-[#f5f5f4] via-[#d6d3d1] to-[#292524] relative h-full">
           {/* Chat Input Box */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[370px]">
             <div className="flex items-center bg-white/80 rounded-xl shadow-lg px-6 py-4">
               <input
                 type="text"
                 className="flex-1 bg-transparent border-none outline-none text-lg text-gray-700 placeholder-gray-500"
-                placeholder="Ask Lovable to build dash"
-                value="Ask Lovable to build dash"
+                placeholder="Your booth with a prompt"
+                value="Your booth with a prompt"
                 readOnly
               />
               <button className="ml-3 p-2 rounded-full bg-black hover:bg-gray-900 transition">

@@ -35,61 +35,59 @@ export function GallerySection({ id }: { id?: string }) {
   ];
 
   return (
-    <section id={id} className="w-full py-24 flex space-y-10 flex-col sm:py-24">
-       <div className="flex flex-col items-center w-full space-y-4 ">
-        <p className="text-[32px] font-[600] text-center w-[60%]">
+    <section id={id} className="w-full py-12 sm:py-16 md:py-24 flex space-y-8 sm:space-y-10 flex-col">
+       <div className="flex flex-col items-center w-full space-y-4 px-4">
+        <p className="text-2xl sm:text-3xl md:text-[32px] font-[600] text-center w-full sm:w-[80%] md:w-[70%] lg:w-[60%]">
          See the Magic in Action
         </p>
-        <h5 className="text-[16px] text-center font-[500] w-[50%]">
- A        showcase of real event moments, instantly transformed into share-worthy branded content.
+        <h5 className="text-sm sm:text-base md:text-[16px] text-center font-[500] w-full sm:w-[70%] md:w-[60%] lg:w-[50%]">
+         A showcase of real event moments, instantly transformed into share-worthy branded content.
         </h5>
       </div>
       <div className="max-w-7xl mx-auto px-4 w-full">
-        <div className="grid grid-rows-2 gap-6 w-full">
-          {/* First Row: 3 images (first large, next two smaller) - full width */}
-          <div className="grid grid-cols-9 gap-6 w-full">
-            {/* Large image on the left, spans 6 columns */}
-            <div className="col-span-6 relative overflow-hidden rounded-2xl w-full">
+        <div className="grid grid-rows-2 gap-4 sm:gap-6 w-full">
+          {/* First Row: Responsive grid layout */}
+          <div className="grid grid-cols-1 md:grid-cols-9 gap-4 sm:gap-6 w-full">
+            {/* Large image on the left, spans full width on mobile, 6 columns on desktop */}
+            <div className="md:col-span-6 relative overflow-hidden rounded-2xl w-full">
               <img
                 src={images[0].src}
                 alt={images[0].alt}
-                className="w-full h-[400px] lg:h-[500px] object-cover"
+                className="w-full h-[300px] sm:h-[400px] lg:h-[500px] object-cover"
               />
             </div>
-            {/* Two stacked images on the right, each spans 3 columns */}
-            <div className="col-span-3 flex flex-col gap-4 w-full">
+            {/* Two stacked images on the right, full width on mobile, 3 columns on desktop */}
+            <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-1 gap-4 sm:gap-6 w-full">
               <div className="relative overflow-hidden rounded-2xl w-full">
                 <img
                   src={images[1].src}
                   alt={images[1].alt}
-                  className="w-full h-[200px] lg:h-[240px] object-cover"
+                  className="w-full h-[150px] sm:h-[200px] lg:h-[240px] object-cover"
                 />
               </div>
               <div className="relative overflow-hidden rounded-2xl w-full">
                 <img
                   src={images[2].src}
                   alt={images[2].alt}
-                  className="w-full h-[200px] lg:h-[240px] object-cover"
+                  className="w-full h-[150px] sm:h-[200px] lg:h-[240px] object-cover"
                 />
               </div>
             </div>
-            {/* Empty col-span-3 for spacing or future use */}
-            <div className="col-span-3"></div>
           </div>
-          {/* Second Row: 2 images */}
-          <div className="grid grid-cols-2 gap-6">
+          {/* Second Row: Responsive 2-column grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="relative overflow-hidden rounded-2xl">
               <img
                 src={images[3].src}
                 alt={images[3].alt}
-                className="w-full h-[280px] lg:h-[420px] object-cover"
+                className="w-full h-[220px] sm:h-[280px] lg:h-[420px] object-cover"
               />
             </div>
             <div className="relative overflow-hidden rounded-2xl">
               <img
                 src={images[4].src}
                 alt={images[4].alt}
-                className="w-full h-[280px] lg:h-[420px] object-cover"
+                className="w-full h-[220px] sm:h-[280px] lg:h-[420px] object-cover"
               />
             </div>
           </div>

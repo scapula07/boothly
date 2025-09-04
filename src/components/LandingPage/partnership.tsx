@@ -39,21 +39,21 @@ export default function Partnership({ id }: { id?: string }) {
   ];
 
   return (
-    <div id={id} className="relative w-full overflow-hidden pt-10">
+    <div id={id} className="relative w-full overflow-hidden pt-6 sm:pt-10">
       {/* Top Band - Dark Reddish Brown with Diagonal Cut */}
       <div
-        className="relative py-6"
+        className="relative py-4 sm:py-6"
         style={{
           background: "linear-gradient(90deg, #891F0C 0%, #040D34 100%)"
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify- space-x-4">
-            <span className="text-white text-lg font-bold ">
+          <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-4">
+            <span className="text-white text-base sm:text-lg font-bold text-center sm:text-left">
               Trusted by forward-thinking brands and event pros.
             </span>
-            <div className="w-2 h-2 bg-white rounded-full"></div>
-            <span className="text-white text-lg font-bold">
+            <div className="hidden sm:block w-2 h-2 bg-white rounded-full"></div>
+            <span className="text-white text-base sm:text-lg font-bold">
               Trusted by forward
             </span>
           </div>
@@ -88,13 +88,13 @@ export default function Partnership({ id }: { id?: string }) {
         ></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 lg:gap-8 items-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-8 items-center px-4 sm:px-0">
             {brands.map((brand, index) => (
               <div key={index} className="flex flex-col items-center group">
-                <div className={`w-16 h-16 ${brand.bgColor} rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
-                  <span className="text-2xl">{brand.logo}</span>
+                <div className={`w-12 h-12 sm:w-16 sm:h-16 ${brand.bgColor} rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+                  <span className="text-xl sm:text-2xl">{brand.logo}</span>
                 </div>
-                <span className={`text-sm font-medium ${brand.color} text-center`}>
+                <span className={`text-xs sm:text-sm font-medium ${brand.color} text-center`}>
                   {brand.name}
                 </span>
               </div>

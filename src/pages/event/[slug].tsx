@@ -64,7 +64,7 @@ export default function EventDetails() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header - spans across */}
-      <div className="w-full py-4 flex items-center justify-center" style={{background: 'linear-gradient(88.56deg, #891F0C 34.23%, #040D34 96.67%)'}}>
+      <div className="w-full py-4 flex items-center justify-center bg-[#292524]">
         <span className="text-white font-medium text-lg tracking-wide">{currentUser?.companyName}</span>
       </div>
       <div className="flex">
@@ -105,16 +105,16 @@ export default function EventDetails() {
             </div>
             {/* Action buttons */}
             <div className="flex gap-4 justify-center mb-8">
-              <button className="text-white px-8 py-2 rounded-full font-medium flex items-center gap-2" style={{background: 'linear-gradient(88.56deg, #891F0C 34.23%, #040D34 96.67%)'}}>
+              <button className="text-white px-8 py-2 rounded-full font-medium flex items-center gap-2 bg-[#292524] hover:bg-[#1c1917] transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 View
               </button>
-              <button className="text-white px-8 py-2 rounded-full font-medium" style={{background: 'linear-gradient(88.56deg, #891F0C 34.23%, #040D34 96.67%)'}}>
+              <button className="text-white px-8 py-2 rounded-full font-medium bg-[#292524] hover:bg-[#1c1917] transition-colors">
                 Select
               </button>
-              <button className="text-white px-8 py-2 rounded-full font-medium flex items-center gap-2" style={{background: 'linear-gradient(88.56deg, #891F0C 34.23%, #040D34 96.67%)'}}>
+              <button className="text-white px-8 py-2 rounded-full font-medium flex items-center gap-2 bg-[#292524] hover:bg-[#1c1917] transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
@@ -126,10 +126,10 @@ export default function EventDetails() {
 
         {/* Right Side Nav */}
         <aside className="w-80 min-h-screen bg-white border-l border-gray-200 flex flex-col py-8 px-6 items-center">
-          <button className="text-white w-full py-3 rounded-lg font-semibold text-base mb-6" style={{background: 'linear-gradient(88.56deg, #891F0C 34.23%, #040D34 96.67%)'}}>
+          <button className="text-white w-full py-3 rounded-lg font-semibold text-base mb-6 bg-[#292524] hover:bg-[#1c1917] transition-colors">
             Edit Event
           </button>
-          <div className="flex flex-col gap-4 text-[#7C3AED] text-base font-medium">
+          <div className="flex flex-col gap-4 text-[#292524] text-base font-medium">
             <a href="#" className="hover:underline">Copy Gallery Link</a>
             <a href="#" className="hover:underline">Export Guests (CSV)</a>
           </div>
@@ -138,7 +138,7 @@ export default function EventDetails() {
             <QRCodeCanvas value={boothUrl} size={200} />
             <p className="text-lg text-gray-600 mt-4">Scan to open booth</p>
             <button
-              className="mt-4 text-white px-6 py-3 rounded-full font-medium bg-blue-600 hover:bg-blue-700 transition-colors"
+              className="mt-4 text-white px-6 py-3 rounded-full font-medium bg-[#292524] hover:bg-[#1c1917] transition-colors"
               onClick={copyToClipboard}
             >
               Copy Booth URL

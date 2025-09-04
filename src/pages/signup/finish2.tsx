@@ -67,13 +67,13 @@ export default function SignupFinish() {
     <AuthGuard>
       <div className="w-screen h-screen flex bg-[#f6f4fa]">
         {/* Left Side */}
-        <div className="w-[420px] flex flex-col justify-center items-center px-10 border-r border-[#e5e3ee] bg-[#f6f4fa]">
+        <div className="w-[420px] flex flex-col justify-center items-center px-10 bg-gradient-to-br from-[#f5f5f4] via-[#d6d3d1] to-[#292524] text-white">
           <div className="w-full">
-            <div className="text-[2rem] font-bold text-[#3d3472] mb-2">Booth<span className="text-[#6c63ff]">.Events</span></div>
-            <div className="text-3xl font-semibold text-[#2d2d2d] leading-tight mb-8 mt-8">A better<br/>experience in<br/>any event.</div>
+            <div className="text-[2rem] font-bold text-white mb-2">Booth<span className="text-[#6ed3f7]">ly</span></div>
+            <div className="text-3xl font-semibold text-white leading-tight mb-8 mt-8">A better<br/>experience in<br/>any event.</div>
           </div>
           <div className="mt-8">
-            <Image src="/booth-illustration.png" alt="Illustration" width={220} height={180} />
+
           </div>
         </div>
         {/* Right Side */}
@@ -132,7 +132,7 @@ export default function SignupFinish() {
               <div className="flex items-center gap-6 mt-8">
                 <button
                   type="submit"
-                  className="flex-1 py-3 rounded-lg bg-[#6ed3f7] text-[#1a3c4c] font-semibold text-lg hover:bg-[#4ca1af] transition"
+                  className="flex-1 py-3 rounded-lg bg-[#292524] text-white font-semibold text-lg hover:bg-[#1c1917] transition"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Loading...' : 'Next'}

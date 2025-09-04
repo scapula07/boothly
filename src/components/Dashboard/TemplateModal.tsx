@@ -46,7 +46,7 @@ export default function TemplateModal({ open, onClose }: { open: boolean; onClos
             >
               <img src={tpl.img} alt={tpl.label} className="w-full h-24 object-cover" />
               <span
-                className="absolute bottom-0 left-0 w-full px-2 py-2 text-sm font-medium text-white text-center bg-black/60 transition-opacity"
+                className="absolute bottom-0 left-0 w-full px-2 py-2 text-sm font-medium text-white text-center bg-[#292524]/80 transition-opacity"
                 style={{letterSpacing: '0.01em'}}
               >
                 {tpl.label}
@@ -66,7 +66,7 @@ export default function TemplateModal({ open, onClose }: { open: boolean; onClos
             <span className="mb-4 text-lg font-medium text-gray-700">Create Event From Scratch</span>
             <button
               onClick={() => handleTemplateSelection('scratch')}
-              className="px-8 py-3 rounded-lg border border-gray-400 bg-white hover:bg-gray-100 font-semibold text-base"
+              className="px-8 py-3 rounded-lg bg-[#292524] text-white hover:bg-[#1c1917] transition-colors font-semibold text-base"
             >
               New Plain Event
             </button>
